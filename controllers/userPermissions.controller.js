@@ -1,26 +1,33 @@
-const model = require('../models/userPermissions.model');
-
+const upModel = require('../models/userPermissions.model');
 module.exports = {
-    getAll: (req, res) => {
-        res.json(model.getAll());
+    getAllUP: (req, res) => {
+        upModel.getAll((err, results) => {
+            if(err) return res.status(500).json(err);
+            res.status(200).json(results);
+        });
     },
-    getById: (req, res) => {
-        const item = model.getById(req.params.id);
-        if (item) res.json(item);
-        else res.status(404).json({ message: "Not found" });
+    getUPById: (req, res) => {
+        upModel.getById(req.params.id, (err, result) => {
+            if(err) return res.status(500).json(err);
+            res.status(200).json(result);
+        });
     },
-    create: (req, res) => {
-        const newItem = model.create(req.body);
-        res.status(201).json(newItem);
+    addUP: (req, res) => {
+        upModel.add(req.body, (err, result) => {
+            if(err) return res.status(500).json(err);
+            res.status(201).json({msg: "Connection created", id: result.insertId});
+        });
     },
-    update: (req, res) => {
-        const updated = model.update(req.params.id, req.body);
-        if (updated) res.json(updated);
-        else res.status(404).json({ message: "Not found" });
+    updateUP: (req, res) => {
+        upModel.update(req.params.id, req.body, (err, result) => {
+            if(err) return res.status(500).json(err);
+            res.status(200).json({msg: "Connection updated"});
+        });
     },
-    delete: (req, res) => {
-        const deleted = model.delete(req.params.id);
-        if (deleted) res.json({ message: "Deleted successfully", deleted });
-        else res.status(404).json({ message: "Not found" });
+    deleteUP: (req, res) => {
+        upModel.delete(req.params.id, (err, result) => {
+            if(err) return res.status(500).json(err);
+            res.status(200).json({msg: "Connection deleted"});
+        });
     }
 };

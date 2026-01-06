@@ -1,26 +1,33 @@
-const model = require('../models/users.model');
-
+const usersModel = require('../models/users.model');
 module.exports = {
     getAllUsers: (req, res) => {
-        res.json(model.getAll());
+        usersModel.getAll((err, results) => {
+            if(err) return res.status(500).json(err);
+            res.status(200).json(results);
+        });
     },
     getUserById: (req, res) => {
-        const user = model.getById(req.params.id);
-        if (user) res.json(user);
-        else res.status(404).json({ message: "User not found" });
+        usersModel.getById(req.params.id, (err, result) => {
+            if(err) return res.status(500).json(err);
+            res.status(200).json(result);
+        });
     },
-    createUser: (req, res) => {
-        const newUser = model.create(req.body);
-        res.status(201).json(newUser);
+    addUser: (req, res) => {
+        usersModel.add(req.body, (err, result) => {
+            if(err) return res.status(500).json(err);
+            res.status(201).json({msg: "User added", id: result.insertId});
+        });
     },
     updateUser: (req, res) => {
-        const updated = model.update(req.params.id, req.body);
-        if (updated) res.json(updated);
-        else res.status(404).json({ message: "User not found" });
+        usersModel.update(req.params.id, req.body, (err, result) => {
+            if(err) return res.status(500).json(err);
+            res.status(200).json({msg: "User updated"});
+        });
     },
     deleteUser: (req, res) => {
-        const deleted = model.delete(req.params.id);
-        if (deleted) res.json({ message: "Deleted successfully", deleted });
-        else res.status(404).json({ message: "User not found" });
+        usersModel.delete(req.params.id, (err, result) => {
+            if(err) return res.status(500).json(err);
+            res.status(200).json({msg: "User deleted"});
+        });
     }
 };

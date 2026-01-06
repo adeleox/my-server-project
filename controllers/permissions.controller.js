@@ -1,26 +1,33 @@
-const model = require('../models/permissions.model');
-
+const permsModel = require('../models/permissions.model');
 module.exports = {
-    getAllPermissions: (req, res) => {
-        res.json(model.getAll());
+    getAllPerms: (req, res) => {
+        permsModel.getAll((err, results) => {
+            if(err) return res.status(500).json(err);
+            res.status(200).json(results);
+        });
     },
-    getPermissionById: (req, res) => {
-        const perm = model.getById(req.params.id);
-        if (perm) res.json(perm);
-        else res.status(404).json({ message: "Permission not found" });
+    getPermById: (req, res) => {
+        permsModel.getById(req.params.id, (err, result) => {
+            if(err) return res.status(500).json(err);
+            res.status(200).json(result);
+        });
     },
-    createPermission: (req, res) => {
-        const newPerm = model.create(req.body);
-        res.status(201).json(newPerm);
+    addPerm: (req, res) => {
+        permsModel.add(req.body, (err, result) => {
+            if(err) return res.status(500).json(err);
+            res.status(201).json({msg: "Permission created", id: result.insertId});
+        });
     },
-    updatePermission: (req, res) => {
-        const updated = model.update(req.params.id, req.body);
-        if (updated) res.json(updated);
-        else res.status(404).json({ message: "Permission not found" });
+    updatePerm: (req, res) => {
+        permsModel.update(req.params.id, req.body, (err, result) => {
+            if(err) return res.status(500).json(err);
+            res.status(200).json({msg: "Permission updated"});
+        });
     },
-    deletePermission: (req, res) => {
-        const deleted = model.delete(req.params.id);
-        if (deleted) res.json({ message: "Deleted successfully", deleted });
-        else res.status(404).json({ message: "Permission not found" });
+    deletePerm: (req, res) => {
+        permsModel.delete(req.params.id, (err, result) => {
+            if(err) return res.status(500).json(err);
+            res.status(200).json({msg: "Permission deleted"});
+        });
     }
 };

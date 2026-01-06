@@ -1,31 +1,8 @@
-let permissions = [
-    { id: 1, name: "read_files" },
-    { id: 2, name: "write_files" }
-];
-
+const db = require('../db');
 module.exports = {
-    getAll: () => permissions,
-    getById: (id) => permissions.find(p => p.id == id),
-    create: (newPerm) => {
-        const id = permissions.length + 1;
-        const permission = { id, ...newPerm };
-        permissions.push(permission);
-        return permission;
-    },
-    update: (id, updatedData) => {
-        const index = permissions.findIndex(p => p.id == id);
-        if (index !== -1) {
-            permissions[index] = { ...permissions[index], ...updatedData };
-            return permissions[index];
-        }
-        return null;
-    },
-    delete: (id) => {
-        const index = permissions.findIndex(p => p.id == id);
-        if (index !== -1) {
-            const deleted = permissions.splice(index, 1);
-            return deleted[0];
-        }
-        return null;
-    }
+    getAll: (cb) => db.query("SELECT * FROM permissions", cb),
+    getById: (id, cb) => db.query("SELECT * FROM permissions WHERE id=?", [id], cb),
+    add: (p, cb) => db.query("INSERT INTO permissions (title, description) VALUES (?,?)", [p.title, p.description], cb),
+    update: (id, p, cb) => db.query("UPDATE permissions SET title=?, description=? WHERE id=?", [p.title, p.description, id], cb),
+    delete: (id, cb) => db.query("DELETE FROM permissions WHERE id=?", [id], cb)
 };
